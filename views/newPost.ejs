@@ -1,0 +1,29 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Create a New Post 📝</h2>
+  
+  <form action="/posts/<%=user._id%>/new" method="POST">
+    <div class="mb-3">
+      <label for="caption" class="form-label">Caption</label>
+      <input type="text" class="form-control" id="caption" name="caption" placeholder="Write a short caption" required maxlength="100">
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Image URL</label>
+      <input type="url" class="form-control" id="image" name="image" placeholder="Paste image link or leave empty to use default">
+    </div>
+
+    <!-- <div class="mb-3">
+      <label for="commentText" class="form-label">First Comment (optional)</label>
+      <input type="text" class="form-control" id="commentText" name="commentText" placeholder="Leave a first comment (optional)">
+    </div>
+
+    <div class="mb-3">
+      <label for="commentAuthor" class="form-label">Comment Author</label>
+      <input type="text" class="form-control" id="commentAuthor" name="commentAuthor" placeholder="Name (optional)">
+    </div> -->
+
+    <button type="submit" class="btn btn-primary">Post</button>
+  </form>
+</div>

@@ -1,0 +1,34 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Post for <%= user.name %> ✏️</h2>
+
+    <form action="/posts/<%= user._id %>/<%= post._id %>?_method=PUT" method="POST">
+        <div class="form-group mb-3">
+            <label for="caption">Caption</label>
+            <input 
+                type="text" 
+                name="caption" 
+                id="caption" 
+                class="form-control" 
+                value="<%= post.caption %>" 
+                required
+            >
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="image">Image URL</label>
+            <input 
+                type="text" 
+                name="image" 
+                id="image" 
+                class="form-control" 
+                value="<%= post.image %>" 
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-success">Update Post ✅</button>
+        <a href="/posts?userId=<%=user._id%>" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>

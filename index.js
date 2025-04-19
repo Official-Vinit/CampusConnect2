@@ -26,14 +26,7 @@ main()
 });
 
 async function main() {
-    await mongoose.connect("mongodb://127.0.0.1:27017/campusconnect2", {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    }).then(() => {
-        console.log("Connected to MongoDB");
-    }).catch(err => {
-        console.error("Error connecting to MongoDB:", err);
-    });
+    await mongoose.connect("mongodb+srv://officialvinit1176:mhISj6Z6KQF122Tc@cluster0.wnjhmsx.mongodb.net/");
 }
 
 //home route

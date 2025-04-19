@@ -81,7 +81,7 @@
                         <div class="d-flex flex-wrap align-items-center">
                           <% const reactionCounts = comment.reactions[0]; %>
                           <% if (reactionCounts.love > 0) { %>
-                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
+                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react/<%=user._id%>" method="POST" style="display: inline;">
                               <input type="hidden" name="userId" value="<%= user._id %>">
                               <input type="hidden" name="emoji" value="love">
                               <button type="submit" class="badge bg-light text-dark me-2" style="font-size: 1rem; border: none; cursor: pointer;">
@@ -90,7 +90,7 @@
                             </form>
                           <% } %>
                           <% if (reactionCounts.laugh > 0) { %>
-                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
+                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react/<%=user._id%>" method="POST" style="display: inline;">
                               <input type="hidden" name="userId" value="<%= user._id %>">
                               <input type="hidden" name="emoji" value="laugh">
                               <button type="submit" class="badge bg-light text-dark me-2" style="font-size: 1rem; border: none; cursor: pointer;">

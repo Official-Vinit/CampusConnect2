@@ -422,7 +422,7 @@ app.post('/posts/:postid/:userid/comment', async (req, res) => {
 
 
 //delete a comment
-app.delete('/posts/:postid/:userid/comments/:commentid', async (req, res) => {
+app.delete('/posts/:postid/:userid/comments /:commentid', async (req, res) => {
     const { postid, userid, commentid } = req.params;
     const post = await Post.findById(postid);
     if (post) {

@@ -1,25 +1,95 @@
 <% layout('layouts/boilerplate') %>
-<h2 class="text-center mt-4">My Favourite Posts</h2>
+
+<style>
+  body {
+    background-color: #f4f6f9;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .post-card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  .card-img-top {
+    height: 300px;
+    object-fit: cover;
+  }
+
+  .btn-sm {
+    padding: 6px 12px;
+    border-radius: 10px;
+  }
+
+  .list-group-item {
+    border: none;
+    background-color: #f8f9fa;
+  }
+
+  .card-footer {
+    background-color: #f8f9fa;
+  }
+</style>
 
 <div class="container mt-5">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-    <% if (favourites.length > 0) { %>
-      <% for (let post of favourites) { %>
-        <div class="col">
-          <div class="card h-100 shadow-sm">
-            <img src="<%= post.image %>" class="card-img-top" alt="Post Image" style="height: 180px; object-fit: cover;">
-            <div class="card-body">
-              <h5 class="card-title"><%= post.caption %></h5>
-              <p class="card-text text-muted">
-                <strong>Posted by:</strong> <%= post.author || 'Anonymous' %>
-              </p>
-              <p class="card-text"><small class="text-muted">🕒 <%= post.createdAt.toDateString() %></small></p>
+  <h2 class="text-center mb-4 fw-bold text-primary">My Favourite Posts</h2>
+
+  <% if (favourites.length === 0) { %>
+    <p class="text-center text-muted">You have no favourite posts yet.</p>
+  <% } %>
+
+  <div class="row row-cols-1 g-4">
+    <% favourites.forEach(post => { %>
+      <div class="col">
+        <div class="card post-card">
+          <img src="<%= post.image %>" class="card-img-top" alt="Post Image">
+
+          <div class="card-body">
+            <h5 class="card-title fw-semibold"><%= post.caption %></h5>
+            <p class="card-text text-muted mb-1">
+              <strong>Posted by:</strong> <%= post.author || 'Anonymous' %>
+            </p>
+            <p class="card-text text-muted mb-1">
+              <strong>👍 Upvotes:</strong> <%= post.upvotes %> |
+              <strong>👎 Downvotes:</strong> <%= post.downvotes %>
+            </p>
+            <p class="card-text">
+              <small class="text-muted">📅 <%= post.createdAt.toDateString() %></small>
+            </p>
+
+            <div class="d-flex justify-content-end mt-3">
+              <a href="/posts/<%= post._id %>/reply" class="btn btn-primary btn-sm">
+                💬 Reply
+              </a>
             </div>
           </div>
+
+          <% if (post.comments && post.comments.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% post.comments.forEach(comment => { %>
+                <li class="list-group-item">
+                  <strong><%= comment.author || 'Anonymous' %>:</strong> <%= comment.text %><br>
+                  <small class="text-muted"><%= comment.createdAt.toDateString() %></small>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <div class="card-footer text-center text-muted">
+              💬 No comments yet.
+            </div>
+          <% } %>
+
         </div>
-      <% } %>
-    <% } else { %>
-      <p class="text-center text-muted">You have no favourite posts yet.</p>
-    <% } %>
+      </div>
+    <% }) %>
   </div>
 </div>

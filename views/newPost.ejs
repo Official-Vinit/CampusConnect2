@@ -1,29 +1,77 @@
 <% layout('layouts/boilerplate') %>
 
+<style>
+
+
+  .post-card {
+    background: linear-gradient(145deg, #32441e, #4c8039);
+    border: none;
+    border-radius: 2rem;
+    padding: 2.5rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.8s ease-in-out;
+    transition: transform 0.3s ease;
+  }
+
+  .post-card:hover {
+    transform: translateY(-5px);
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-control {
+    border-radius: 1rem;
+  }
+
+  .btn-post {
+    font-size: 1.2rem;
+    padding: 0.8rem;
+    border-radius: 2rem;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+
+  .btn-post:hover {
+    background-color: #198754;
+    color: white;
+  }
+
+  .form-label, label {
+    font-weight: 600;
+    color: #333;
+  }
+</style>
+
 <div class="container mt-5">
-  <h2 class="text-center mb-4">Create a New Post 📝</h2>
-  
-  <form action="/posts/<%=user._id%>/new" method="POST">
-    <div class="mb-3">
-      <label for="caption" class="form-label">Caption</label>
-      <input type="text" class="form-control" id="caption" name="caption" placeholder="Write a short caption" required maxlength="100">
-    </div>
+  <div class="post-card mx-auto" style="max-width: 600px;">
+    <h2 class="text-center mb-3 fw-bold text-primary">📸 Share Your Moment</h2>
+    <p class="text-center text-muted mb-4">Let the world know what you're up to 🌍✨</p>
+    
+    <form action="/posts/<%= user._id %>/new" method="POST" enctype="multipart/form-data">
+      <div class="form-floating mb-4">
+        <input type="text" name="caption" id="caption" class="form-control" placeholder="Write something cool..." required>
+        <label for="caption">📄 Write a caption...</label>
+      </div>
 
-    <div class="mb-3">
-      <label for="image" class="form-label">Image URL</label>
-      <input type="url" class="form-control" id="image" name="image" placeholder="Paste image link or leave empty to use default">
-    </div>
+      <div class="mb-4">
+        <label for="image" class="form-label">🖼️ Upload your image</label>
+        <input type="file" name="image" id="image" class="form-control" accept="image/*">
+        <div class="form-text">Supported formats: jpg, png, gif</div>
+      </div>
 
-    <!-- <div class="mb-3">
-      <label for="commentText" class="form-label">First Comment (optional)</label>
-      <input type="text" class="form-control" id="commentText" name="commentText" placeholder="Leave a first comment (optional)">
-    </div>
-
-    <div class="mb-3">
-      <label for="commentAuthor" class="form-label">Comment Author</label>
-      <input type="text" class="form-control" id="commentAuthor" name="commentAuthor" placeholder="Name (optional)">
-    </div> -->
-
-    <button type="submit" class="btn btn-primary">Post</button>
-  </form>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-success btn-post fw-bold">
+          🚀 Post It!
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

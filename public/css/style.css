@@ -1,0 +1,337 @@
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4cc9f0;
+    --light-bg: #f8f9fa;
+    --dark-bg: #212529;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+  }
+  
+/* Sidebar Styling */
+.sidebar {
+  background: linear-gradient(135deg, #34d399, #4c8039);  /* Gradient between two green shades */
+  padding: 20px;
+margin-top: 20px;
+ border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  
+}
+
+/* User Profile */
+.user-profile {
+  margin-bottom: 20px;
+}
+
+.user-profile img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.user-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Stats */
+.user-stats {
+  margin-bottom: 20px;
+}
+
+.user-stats .badge {
+  background-color: #fff;
+  color: #1f2937;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* Buttons */
+.nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  color: #32441e;  /* Darker green for text */
+  border: 1px solid #4c8039;  /* Lighter green for border */
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.nav-button:hover {
+  background-color: #4c8039;  /* Lighter green for hover */
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.nav-button i {
+  margin-right: 8px;
+}
+
+.danger-button {
+  background-color: #ff4d4d;
+  border-color: #ff4d4d;
+  color: #fff;
+}
+
+.danger-button:hover {
+  background-color: #e60000;
+  border-color: #e60000;
+}
+
+.danger-button i {
+  margin-right: 8px;
+}
+
+  /* Glassy background for each post card */
+.post-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Image styling */
+.post-card .card-img-top {
+  height: 250px;
+  object-fit: cover;
+  border-radius: 20px 20px 0 0;
+}
+
+/* Title */
+.post-card .card-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+/* Post Header */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  color: #6c757d;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.vote-button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.vote-button:hover {
+  background-color: #f1f1f1;
+}
+
+.vote-button.btn-outline-success {
+  color: #28a745;
+  border: 1px solid #28a745;
+}
+
+.vote-button.btn-outline-danger {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+/* Comments Section */
+.comments-section {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.comment-item, .reply-item {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.replies-container {
+  margin-left: 20px;
+  border-left: 2px dashed #ccc;
+  padding-left: 10px;
+}
+
+.reactions-container {
+  margin-top: 10px;
+}
+
+.reaction-button {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+/* Follow & Favorite Buttons */
+.btn.btn-sm {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Form controls */
+textarea.form-control {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  color: #333;
+}
+
+textarea.form-control:focus {
+  background: white;
+  color: black;
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Section title */
+h2.text-center {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: #1e272e;
+}
+
+  
+  /* Right Sidebar - News Ticker */
+.news-box {
+  background: linear-gradient(135deg, #34d399, #4c8039);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  position: relative;
+}
+
+.news-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.news-title i {
+  margin-right: 10px;
+  font-size: 1.5rem;
+}
+
+.news-ticker {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+  position: relative;
+}
+
+.news-items {
+  animation: scrollNews 10s linear infinite;
+}
+
+.news-item {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.news-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.news-item h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.news-item p {
+  font-size: 0.95rem;
+  color: #d1fae5;
+}
+
+/* Hover Effect for News Items */
+.news-item:hover h5 {
+  color: #d1fae5;
+}
+
+@keyframes scrollNews {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+  
+  @keyframes ticker {
+    0% { top: 0; }
+    100% { top: -300px; }
+  }
+  
+  /* Form styling */
+  .form-control {
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+  }
+  
+  .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+    border-color: var(--primary-color);
+  }
+  
+  .btn-sm {
+    border-radius: 20px;
+    padding: 5px 15px;
+  }
+
+  /* Custom Search Bar Styling */
+.custom-search-bar {
+  width: 400px; /* Adjust the size of the search bar */
+  padding: 8px 10px; /* Increase padding for a bigger input field */
+  font-size: 1.1rem; /* Increase font size for better readability */
+}

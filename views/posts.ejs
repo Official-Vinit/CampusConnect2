@@ -1,200 +1,313 @@
-<% layout('layouts/boilerplate') %>
-<h2 class="text-center mt-4">Welcome, <%= user.name %> 👋</h2>
-
-<!-- Display Followers Count -->
-<div class="text-center mt-2">
-  <p class="text-muted">
-    <strong>Followers:</strong> <span class="badge bg-primary"><%= user.followers || 0 %></span>
-  </p>
-</div>
-
-<div class="container mt-3">
-  <div class="d-flex flex-wrap justify-content-center gap-3">
-    <form action="/posts/<%= user._id %>/new" method="get">
-      <button class="btn btn-dark">Create a Post</button>
-    </form>
-    <form action="/posts/<%= user._id %>/mypost" method="get">
-      <button class="btn btn-dark">My Posts</button>
-    </form>
-    <form action="/users/<%= user._id %>/favourites" method="get">
-      <button class="btn btn-dark">My Favourite Posts</button>
-    </form>
-    <form action="/logout" method="get">
-      <button class="btn btn-dark">Log Out</button>
-    </form>
-    <form action="/users/<%= user._id %>?_method=DELETE" method="POST">
-      <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete your account?')">
-        Delete Account
-      </button>
-    </form>
+<% layout('layouts/boilerplate') %> 
+ <div class="container-fluid">
+  <div class="row">
+<!-- Left Sidebar -->
+<div class="col-lg-2 col-md-3 p-0 sidebar">
+  <div class="user-profile text-center">
+    <img src="/images/image.png" alt="User Profile" class="rounded-circle user-image">
+    <h3 class="user-name"><%= user.name %></h3>
   </div>
+
+  <div class="user-stats">
+    <div class="d-flex justify-content-between">
+      <span><i class="fas fa-users"></i> Followers</span>
+      <span class="badge bg-light text-dark"><%= user.followers || 0 %></span>
+    </div>
+  </div>
+
+  <form action="/posts/<%= user._id %>/new" method="get">
+    <button class="nav-button"><i class="fas fa-plus-circle"></i> Create Post</button>
+  </form>
+  
+  <form action="/posts/<%= user._id %>/mypost" method="get">
+    <button class="nav-button"><i class="fas fa-list"></i> My Posts</button>
+  </form>
+
+  <form action="/users/<%= user._id %>/favourites" method="get">
+    <button class="nav-button"><i class="fas fa-heart"></i> My Favourite Posts</button>
+  </form>
+  
+  <form action="/logout" method="get">
+    <button class="nav-button"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+  </form>
+  
+  <form action="/users/<%= user._id %>?_method=DELETE" method="POST">
+    <button type="submit" class="nav-button danger-button" onclick="return confirm('Are you sure you want to delete your account?')">
+      <i class="fas fa-trash-alt"></i> Delete Account
+    </button>
+  </form>
 </div>
 
-<div class="container mt-5">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-    <% for (let post of posts) { %>
-      <div class="col">
-        <div class="card h-100 shadow-sm">
-          <img src="<%= post.image %>" class="card-img-top" alt="Post Image" style="height: 180px; object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title"><%= post.caption %></h5>
 
-            <!-- Display Post Author -->
-            <p class="card-text text-muted">
-              <strong>Posted by:</strong> <%= post.author || 'Anonymous' %>
-            </p>
-
-            <!-- Follow Button -->
+    
+    <!-- Main Content Area -->
+    <div class="col-lg-7 col-md-6 py-4">
+      <h2 class="text-center mb-4">Latest Posts</h2>
+      
+      <div class="posts-container">
+        <% for (let post of posts) { %>
+          <div class="post-card card">
+            <img src="<%= post.image %>" class="card-img-top" alt="Post Image">
+            <div class="card-body">
+              <h4 class="card-title"><%= post.caption %></h4>
+              
+              <div class="post-header">
+                <div class="post-author">
+                  <i class="fas fa-user-circle"></i> <%= post.author || 'Anonymous' %>
+                </div>
+                
+                <div class="post-date">
+                  <i class="far fa-calendar-alt"></i> <%= post.createdAt.toDateString() %>
+                </div>
+              </div>
+              
+              <div class="d-flex gap-2">
+                <!-- Follow Button -->
             <form action="/users/<%= user._id %>/follow/<%= post.authorId %>" method="POST" style="display: inline;">
               <button class="btn btn-primary btn-sm">Follow</button>
             </form>
-
-            <!-- Add to Favourites Button -->
-            <form action="/users/<%= user._id %>/favourites/<%= post._id %>" method="POST" style="display: inline;">
-              <button class="btn btn-warning btn-sm">Add to Favourites</button>
-            </form>
-
-            <p class="card-text">
-              <form action="/posts/<%= post._id %>/<%= user._id %>/upvote" method="POST" style="display: inline;">
-                <button class="btn btn-success btn-sm" title="Upvote">👍 <%= post.upvotes %></button>
-              </form>
-
-              <form action="/posts/<%= post._id %>/<%= user._id %>/downvote" method="POST" style="display: inline;">
-                <button class="btn btn-danger btn-sm" title="Downvote">👎 <%= post.downvotes %></button>
-              </form>
-            </p>
-
-            <p class="card-text"><small class="text-muted">🕒 <%= post.createdAt.toDateString() %></small></p>
-
-            <% if (post.comments && post.comments.length > 0) { %>
-              <h6 class="mt-3">🗨️ Comments:</h6>
-              <ul class="list-group">
-                <% for (let comment of post.comments) { %>
-                  <li class="list-group-item" id="comment-<%= comment._id %>">
-                    <strong><%= comment.author || 'Anonymous' %>:</strong>
-                    <span id="comment-text-<%= comment._id %>"><%= comment.text %></span><br>
-                    <small class="text-muted"><%= comment.createdAt.toDateString() %></small>
-
-                    <!-- Display Reactions -->
-                    <div class="mt-2">
-                      <% if (comment.reactions && comment.reactions.length > 0) { %>
-                        <div class="d-flex flex-wrap align-items-center">
-                          <% const reactionCounts = comment.reactions[0]; %>
-                          <% if (reactionCounts.love > 0) { %>
-                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react/<%=user._id%>" method="POST" style="display: inline;">
-                              <input type="hidden" name="userId" value="<%= user._id %>">
-                              <input type="hidden" name="emoji" value="love">
-                              <button type="submit" class="badge bg-light text-dark me-2" style="font-size: 1rem; border: none; cursor: pointer;">
-                                ❤️ <small>(<%= reactionCounts.love %>)</small>
-                              </button>
-                            </form>
-                          <% } %>
-                          <% if (reactionCounts.laugh > 0) { %>
-                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react/<%=user._id%>" method="POST" style="display: inline;">
-                              <input type="hidden" name="userId" value="<%= user._id %>">
-                              <input type="hidden" name="emoji" value="laugh">
-                              <button type="submit" class="badge bg-light text-dark me-2" style="font-size: 1rem; border: none; cursor: pointer;">
-                                😂 <small>(<%= reactionCounts.laugh %>)</small>
-                              </button>
-                            </form>
-                          <% } %>
-                          <% if (reactionCounts.wow > 0) { %>
-                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
-                              <input type="hidden" name="userId" value="<%= user._id %>">
-                              <input type="hidden" name="emoji" value="wow">
-                              <button type="submit" class="badge bg-light text-dark me-2" style="font-size: 1rem; border: none; cursor: pointer;">
-                                😮 <small>(<%= reactionCounts.wow %>)</small>
-                              </button>
-                            </form>
-                          <% } %>
-                          <% if (reactionCounts.like > 0) { %>
-                            <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
-                              <input type="hidden" name="userId" value="<%= user._id %>">
-                              <input type="hidden" name="emoji" value="like">
-                              <button type="submit" class="badge bg-light text-dark me-2" style="font-size: 1rem; border: none; cursor: pointer;">
-                                👍 <small>(<%= reactionCounts.like %>)</small>
-                              </button>
-                            </form>
-                          <% } %>
-                        </div>
-                      <% } else { %>
-                        <p class="text-muted">No reactions yet.</p>
-                      <% } %>
-                    </div>
-
-                    <!-- Reply to Comment Button -->
-                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="document.getElementById('replyForm-<%= comment._id %>').classList.toggle('d-none')">
-                      ↩️ Reply
-                    </button>
-
-                    <!-- Reply Form (Hidden by Default) -->
-                    <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/reply/<%=user._id%>" method="POST" id="replyForm-<%= comment._id %>" class="d-none mt-2">
-                      <div class="form-group">
-                        <textarea name="text" class="form-control" rows="2" placeholder="Write your reply here..." required></textarea>
-                      </div>
-                      <button type="submit" class="btn btn-sm btn-success mt-2">Post Reply</button>
-                    </form>
-
-                    <!-- Display Replies -->
-                    <% if (comment.replies && comment.replies.length > 0) { %>
-                      <ul class="list-group mt-3">
-                        <% for (let reply of comment.replies) { %>
-                          <li class="list-group-item">
-                            <strong><%= reply.author || 'Anonymous' %>:</strong>
-                            <span><%= reply.text %></span><br>
-                            <small class="text-muted"><%= reply.createdAt.toDateString() %></small>
-                          </li>
-                        <% } %>
-                      </ul>
-                    <% } %>
-
-                    <% if (comment.author === user.name) { %>
-                      <!-- Edit & Delete Buttons -->
-                      <div class="mt-2">
-                        <button class="btn btn-warning btn-sm" onclick="toggleEditForm('<%= comment._id %>')">Edit</button>
-
-                        <form action="/posts/<%= post._id %>/<%=user._id%>/comment/<%= comment._id %>?_method=DELETE" method="POST" style="display: inline;">
-                          <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</button>
-                        </form>
-                      </div>
-
-                      <!-- Edit Comment Form (Hidden by default) -->
-                      <form action="/posts/<%= post._id %>/<%=user._id%>/comment/<%= comment._id %>?_method=PUT" method="POST" class="mt-2 d-none" id="edit-form-<%= comment._id %>">
-                        <div class="form-group">
-                          <textarea name="text" class="form-control" rows="2" required><%= comment.text %></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-success btn-sm mt-1">Update</button>
-                        <button type="button" class="btn btn-secondary btn-sm mt-1" onclick="toggleEditForm('<%= comment._id %>')">Cancel</button>
-                      </form>
-                    <% } %>
-                  </li>
-                <% } %>
-              </ul>
-            <% } else { %>
-              <p class="text-muted mt-3">No comments yet.</p>
-            <% } %>
-
-            <!-- Add Comment Section -->
-            <button class="btn btn-outline-primary btn-sm mt-3" onclick="document.getElementById('commentForm-<%= post._id %>').classList.toggle('d-none')">
-              💬 Add Comment
-            </button>
-
-            <form action="/posts/<%= post._id %>/<%=user._id%>/comment" method="POST" id="commentForm-<%= post._id %>" class="d-none mt-2">
-              <div class="form-group">
-                <textarea name="text" class="form-control" rows="2" placeholder="Write your comment here..." required></textarea>
+                
+                <form action="/users/<%= user._id %>/favourites/<%= post._id %>" method="POST">
+                  <button type="submit" class="btn btn-warning btn-sm" title="Add to Favorite">
+                    <i class="fas fa-star"></i> Favorite
+                  </button>
+                </form>
               </div>
-              <button type="submit" class="btn btn-sm btn-success mt-2">Post Comment</button>
-            </form>
+              
+              <div class="action-buttons">
+                <form action="/posts/<%= post._id %>/<%= user._id %>/upvote" method="POST">
+                  <button class="vote-button btn-outline-success">
+                    <i class="fas fa-thumbs-up"></i> <%= post.upvotes %>
+                  </button>
+                </form>
+                
+                <form action="/posts/<%= post._id %>/<%= user._id %>/downvote" method="POST">
+                  <button class="vote-button btn-outline-danger">
+                    <i class="fas fa-thumbs-down"></i> <%= post.downvotes %>
+                  </button>
+                </form>
+              </div>
+              
+              <!-- Comments Section -->
+              <div class="comments-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0"><i class="fas fa-comments"></i> Comments</h5>
+                  <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('commentForm-<%= post._id %>').classList.toggle('d-none')">
+                    <i class="fas fa-plus"></i> Add Comment
+                  </button>
+                </div>
+                
+                <!-- Add Comment Form -->
+                <form action="/posts/<%= post._id %>/<%=user._id%>/comment" method="POST" id="commentForm-<%= post._id %>" class="d-none mb-3">
+                  <div class="form-group">
+                    <textarea name="text" class="form-control" rows="2" placeholder="Write your comment here..." required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-sm mt-2">Post Comment</button>
+                </form>
+                
+                <!-- Comments List -->
+                <% if (post.comments && post.comments.length > 0) { %>
+                  <div class="comments-list">
+                    <% for (let comment of post.comments) { %>
+                      <div class="comment-item" id="comment-<%= comment._id %>">
+                        <div class="d-flex justify-content-between">
+                          <strong><%= comment.author || 'Anonymous' %></strong>
+                          <small class="text-muted"><%= comment.createdAt.toDateString() %></small>
+                        </div>
+                        
+                        <p id="comment-text-<%= comment._id %>"><%= comment.text %></p>
+                        
+                        <!-- Comment Reactions -->
+                        <div class="reactions-container mb-2">
+                          <% if (comment.reactions && comment.reactions.length > 0) { %>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                              <% const reactionCounts = comment.reactions[0]; %>
+                              <% if (reactionCounts.love > 0) { %>
+                                <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
+                                  <input type="hidden" name="userId" value="<%= user._id %>">
+                                  <input type="hidden" name="emoji" value="love">
+                                  <button type="submit" class="reaction-button">
+                                    ❤️ <small>(<%= reactionCounts.love %>)</small>
+                                  </button>
+                                </form>
+                              <% } %>
+                              <% if (reactionCounts.laugh > 0) { %>
+                                <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
+                                  <input type="hidden" name="userId" value="<%= user._id %>">
+                                  <input type="hidden" name="emoji" value="laugh">
+                                  <button type="submit" class="reaction-button">
+                                    😂 <small>(<%= reactionCounts.laugh %>)</small>
+                                  </button>
+                                </form>
+                              <% } %>
+                              <% if (reactionCounts.wow > 0) { %>
+                                <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
+                                  <input type="hidden" name="userId" value="<%= user._id %>">
+                                  <input type="hidden" name="emoji" value="wow">
+                                  <button type="submit" class="reaction-button">
+                                    😮 <small>(<%= reactionCounts.wow %>)</small>
+                                  </button>
+                                </form>
+                              <% } %>
+                              <% if (reactionCounts.like > 0) { %>
+                                <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/react" method="POST" style="display: inline;">
+                                  <input type="hidden" name="userId" value="<%= user._id %>">
+                                  <input type="hidden" name="emoji" value="like">
+                                  <button type="submit" class="reaction-button">
+                                    👍 <small>(<%= reactionCounts.like %>)</small>
+                                  </button>
+                                </form>
+                              <% } %>
+                            </div>
+                          <% } else { %>
+                            <small class="text-muted">No reactions yet</small>
+                          <% } %>
+                        </div>
+                        
+                        <!-- Comment Actions -->
+                        <div class="comment-actions">
+                          <button class="btn btn-sm btn-outline-primary" onclick="document.getElementById('replyForm-<%= comment._id %>').classList.toggle('d-none')">
+                            <i class="fas fa-reply"></i> Reply
+                          </button>
+                          
+                          <% if (comment.author === user.name) { %>
+                            <button class="btn btn-sm btn-outline-warning" onclick="toggleEditForm('<%= comment._id %>')">
+                              <i class="fas fa-edit"></i> Edit
+                            </button>
+                            
+                            <form action="/posts/<%= post._id %>/<%=user._id%>/comment/<%= comment._id %>?_method=DELETE" method="POST" style="display: inline;">
+                              <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this comment?')">
+                                <i class="fas fa-trash"></i> Delete
+                              </button>
+                            </form>
+                          <% } %>
+                        </div>
+                        
+                        <!-- Reply Form -->
+                        <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/reply/<%=user._id%>" method="POST" id="replyForm-<%= comment._id %>" class="d-none mt-2">
+                          <div class="form-group">
+                            <textarea name="text" class="form-control" rows="2" placeholder="Write your reply here..." required></textarea>
+                          </div>
+                          <button type="submit" class="btn btn-sm btn-success mt-2">Post Reply</button>
+                        </form>
+                        
+                        <!-- Edit Form -->
+                        <% if (comment.author === user.name) { %>
+                          <form action="/posts/<%= post._id %>/<%=user._id%>/comment/<%= comment._id %>?_method=PUT" method="POST" class="mt-2 d-none" id="edit-form-<%= comment._id %>">
+                            <div class="form-group">
+                              <textarea name="text" class="form-control" rows="2" required><%= comment.text %></textarea>
+                            </div>
+                            <div class="mt-2">
+                              <button type="submit" class="btn btn-success btn-sm">Update</button>
+                              <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditForm('<%= comment._id %>')">Cancel</button>
+                            </div>
+                          </form>
+                        <% } %>
+                        
+                        <!-- Replies List -->
+                        <% if (comment.replies && comment.replies.length > 0) { %>
+                          <div class="replies-container mt-2">
+                            <% for (let reply of comment.replies) { %>
+                              <div class="reply-item">
+                                <div class="d-flex justify-content-between">
+                                  <strong><%= reply.author || 'Anonymous' %></strong>
+                                  <small class="text-muted"><%= reply.createdAt.toDateString() %></small>
+                                </div>
+                                <p><%= reply.text %></p>
+                              </div>
+                            <% } %>
+                          </div>
+                        <% } %>
+                      </div>
+                    <% } %>
+                  </div>
+                <% } else { %>
+                  <p class="text-center text-muted">No comments yet. Be the first to comment!</p>
+                <% } %>
+              </div>
+            </div>
           </div>
+        <% } %>
+      </div>
+    </div>
+    
+   <!-- Right Sidebar - News Ticker -->
+<div class="col-lg-3 col-md-3 py-4">
+  <div class="news-box">
+    <h4 class="news-title">
+      <i class="fas fa-newspaper"></i> Latest News
+    </h4>
+    <div class="news-ticker">
+      <div class="news-items">
+        <div class="news-item">
+          <h5>New Feature Added</h5>
+          <p>Now you can react to comments with different emojis!</p>
+        </div>
+        <div class="news-item">
+          <h5>Weekly Challenge</h5>
+          <p>Share your best nature photo and win special badges.</p>
+        </div>
+        <div class="news-item">
+          <h5>Community Spotlight</h5>
+          <p>This week's top contributor is user123 with 50 helpful comments!</p>
+        </div>
+        <div class="news-item">
+          <h5>Coming Soon</h5>
+          <p>Private messaging feature will be available next week.</p>
+        </div>
+        <div class="news-item">
+          <h5>Maintenance Notice</h5>
+          <p>Brief downtime expected on Saturday for system upgrades.</p>
+        </div>
+        <div class="news-item">
+          <h5>New Feature Added</h5>
+          <p>Now you can react to comments with different emojis!</p>
         </div>
       </div>
-    <% } %>
+    </div>
   </div>
 </div>
 
+
+
+
+
+
+
+
 <script>
+  // Store the current scroll position in localStorage before form submission
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get all forms
+    const forms = document.querySelectorAll('form');
+    
+    // Add event listener to each form
+    forms.forEach(form => {
+      form.addEventListener('submit', function() {
+        localStorage.setItem('scrollPosition', window.scrollY);
+      });
+    });
+    
+    // Restore scroll position when page loads
+    if (localStorage.getItem('scrollPosition')) {
+      window.scrollTo(0, localStorage.getItem('scrollPosition'));
+      // Optional: Clear the stored position after using it
+      // localStorage.removeItem('scrollPosition');
+    }
+  });
+
+  // Your existing functions
   function toggleEditForm(commentId) {
     const form = document.getElementById(`edit-form-${commentId}`);
     form.classList.toggle('d-none');
   }
+  
+  // Pause news ticker animation on hover
+  document.querySelector('.news-ticker').addEventListener('mouseenter', function() {
+    document.querySelector('.news-items').style.animationPlayState = 'paused';
+  });
+  
+  document.querySelector('.news-ticker').addEventListener('mouseleave', function() {
+    document.querySelector('.news-items').style.animationPlayState = 'running';
+  });
 </script>

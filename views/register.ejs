@@ -1,4 +1,98 @@
 <% layout('layouts/boilerplate') %>
+
+<style>
+  main {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #32441e, #4c8039);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Poppins", sans-serif;
+    padding: 2rem;
+  }
+
+  .auth-form {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 1.75rem;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    max-width: 420px;
+    width: 100%;
+    color: #ffffff;
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #eaffea;
+    font-size: 0.95rem;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 1rem;
+    color: #333;
+    transition: 0.3s;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(168, 224, 99, 0.4);
+    border-color: #9be15d;
+  }
+
+  .btn {
+    background: linear-gradient(to right, #56ab2f, #a8e063);
+    color: white;
+    border: none;
+    padding: 0.9rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(86, 171, 47, 0.5);
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 12px 35px rgba(86, 171, 47, 0.7);
+  }
+
+  .form-group select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url('data:image/svg+xml,%3csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"%3e%3cpath fill="%23fff" d="M10 12l5-5h-10z"/%3e%3c/svg%3e') no-repeat scroll right 10px center;
+    background-size: 10px 5px;
+  }
+</style>
+
 <main>
     <form action="/register" method="POST" class="auth-form">
         <div class="form-group">

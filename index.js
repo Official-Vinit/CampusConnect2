@@ -1,14 +1,14 @@
 const express = require('express')
 const app = express();
+const engine = require('ejs-mate')
 
 const path = require("path");
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine","ejs");
+app.engine('ejs', engine);
+
 app.use(express.static(path.join(__dirname,"public")))
 app.use(express.urlencoded({ extended: true }));
-
-const ejsMate = require("ejs-mate");
-app.engine("ejs", ejsMate);
 
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
@@ -17,80 +17,120 @@ const mongoose = require('mongoose');
 const Post = require('./models/post.js')
 const User = require('./models/user.js')
 
-async function main() {
-    await mongoose.connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    }).then(() => {
-        console.log("Connected to MongoDB Atlas");
-    }).catch(err => {
-        console.error("Error connecting to MongoDB Atlas:", err);
-    });
-}
+main()
+.then(()=>{
+    console.log("Connected to MongoDB successfully");
+})
+.catch(err=>{
+    console.log(err)
+});
 
-main();
+async function main() {
+    await mongoose.connect("mongodb://127.0.0.1:27017/campusconnect2");
+}
+// async function main() {
+//     await mongoose.connect("mongodb://127.0.0.1:27017/campusconnect2");
+// }
+
+const multer = require('multer');
+
+// Set up storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
+
+
+
+
 
 //home route
 app.get('/',(req,res)=>{
-    res.render("index.ejs")
-})
+res.render("home.ejs")
+});
 
 //login route
 app.get('/login',(req,res)=>{
     res.render("login.ejs")
-})
+});
 
-app.post('/login',async (req,res)=>{
-    const{email,password} = req.body;
-    const user = await User.findOne({email: email});
-    if(!user){
-        return res.send("User not registered")
+// Login route
+app.post('/login', async (req, res) => {
+    let { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.send("User not found");
     }
-    if(user.password !== password){
-        return res.send("Incorrect Password")
+    if (user.password !== password) {
+        return res.send("Incorrect password");
     }
-    console.log(user._id)
-    res.redirect(`/posts?userId=${user._id}`)
-})
+    res.redirect(`/posts?user=${user._id}`);  // Pass user ID via query param
+});
 
 //register route
 app.get('/register',(req,res)=>{
     res.render("register.ejs")
-})
+});
 
-//register user
-app.post('/register',async (req,res)=>{
-    const {name,email,password,role} = req.body;
-    const user = new User({role,name,email,password});
+//posts route
+app.post('/register',async(req,res)=>{
+    let{role,name,email,password} = req.body;
+    let user = new User({role,name,email,password});
     await user.save();
-    res.redirect(`/posts?userId=${user._id}`)
-})
+    console.log(user);
+    res.redirect('/')
+});
 
-//post route
-app.get('/posts',async (req,res)=>{
-    const {userId} = req.query;
+
+app.get('/posts', async (req, res) => {
+    // Sort posts in descending order by createdAt date
+    const posts = await Post.find({}).sort({ createdAt: -1 });
+    const userId = req.query.user;
+    
+    if (!userId) {
+        return res.send("User ID not provided");
+    }
+    
     const user = await User.findById(userId);
-    console.log(userId)
-    const posts = await Post.find({});
-    res.render("posts.ejs",{posts,user})
-})
+    
+    if (!user) {
+        return res.send("User not found");
+    }
+    
+    res.render("post.ejs", { posts, user });
+});
 
-//new post route
-app.get('/posts/:id/new',async(req,res)=>{
-    const {id} = req.params;
+
+//new get
+app.get('/posts/:id/new', async(req, res) => {
+    let{id} = req.params;
     const user = await User.findById(id);
-    res.render("newPost.ejs",{user})
-})
+    res.render("newpost.ejs",{user})
+});
 
-app.post('/posts/:id/new', async (req, res) => {
+
+
+app.post('/posts/:id/new', upload.single('image'), async (req, res) => {
     const { id } = req.params;
-    const { caption, image } = req.body;
+    const { caption } = req.body;
     const user = await User.findById(id);
+  
+    let imagePath = '';
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`; // relative to public folder
+    }
   
     const post = new Post({
       caption,
-      image,
-      author: user.name ,// Set the author's name
+      image: imagePath,
+      author: user.name,
       authorId: id
     });
   
@@ -98,24 +138,31 @@ app.post('/posts/:id/new', async (req, res) => {
     user.posts.push(post._id);
     await user.save();
   
-    res.redirect(`/posts?userId=${user._id}`);
+    res.redirect(`/posts?user=${user._id}`);
   });
+  
 
-//my posts route
-app.get('/posts/:id/myPost',async (req,res)=>{
-    const {id} = req.params;
-    const user = await User.findById(id).populate('posts');
+
+//my post route
+app.get('/posts/:id/mypost',async(req,res)=>{
+    let {id} = req.params;
+    const user = await User.findById(id).populate("posts");
     console.log(user.posts)
-    res.render("myPosts.ejs",{user})
-})   
+     res.render("mypost.ejs",{user});
+});
 
-//delete post route
-app.delete('/posts/:userid/:postid',async (req,res)=>{
-    const {userid,postid} = req.params;
-    await User.findByIdAndUpdate(userid,{$pull:{posts:postid}})
-    await Post.findByIdAndDelete(postid);
-    res.redirect(`/posts/${userid}/myposts`)
-})
+
+app.delete('/posts/:userId/:postId', async (req, res) => {
+    const { userId, postId } = req.params;
+
+    // 1. Delete the post
+    await Post.findByIdAndDelete(postId);
+
+    // 2. Remove post reference from user
+    await User.findByIdAndUpdate(userId, { $pull: { posts: postId } });
+
+    res.redirect(`/posts/${userId}/mypost`);
+});
 
 //edit post route
 app.get('/posts/:userid/:postid/edit',async (req,res)=>{
@@ -125,18 +172,24 @@ app.get('/posts/:userid/:postid/edit',async (req,res)=>{
     res.render("editPost.ejs",{user,post})
 })
 
+    // Update post route
 app.put('/posts/:userid/:postid', async (req, res) => {
     const { userid, postid } = req.params;
     const { caption, image } = req.body;
-    let user =await User.findById(userid);
+
     await Post.findByIdAndUpdate(postid, { caption, image });
-    res.redirect(`/posts?userId=${user._id}`);
+    res.redirect(`/posts?user=${userid}`);
 });
 
 //logout route
-app.get('/logout',(req,res)=>{
-    res.redirect('/')
-})
+app.get('/logout', (req, res) => {
+    // If you're using sessions, destroy it like this:
+    // req.session.destroy();
+
+    // For now, just redirect to home or login page
+    res.redirect('/'); // or '/' based on your app structure
+});
+
 
 // Delete user and their posts route
 app.delete('/users/:userid', async (req, res) => {
@@ -162,7 +215,7 @@ app.delete('/users/:userid', async (req, res) => {
     }
 });
 
-// Upvote a post
+ // Upvote a post
 app.post('/posts/:postid/:userid/upvote', async (req, res) => {
     const { postid,userid } = req.params;
     const post = await Post.findById(postid);
@@ -170,7 +223,7 @@ app.post('/posts/:postid/:userid/upvote', async (req, res) => {
         post.upvotes += 1;
         await post.save();
     }
-    res.redirect(`/posts?userId=${userid}`); // Redirect to the same page
+    res.redirect(`/posts?user=${userid}`); // Redirect to the same page
 });
 
 // Downvote a post
@@ -181,8 +234,9 @@ app.post('/posts/:postid/:userid/downvote', async (req, res) => {
         post.downvotes += 1;
         await post.save();
     }
-    res.redirect(`/posts?userId=${userid}`); // Redirect to the same page
+    res.redirect(`/posts?user=${userid}`); // Redirect to the same page
 });
+  
 
 // Add a comment to a post
 app.post('/posts/:postid/:userid/comment', async (req, res) => {
@@ -194,8 +248,9 @@ app.post('/posts/:postid/:userid/comment', async (req, res) => {
         post.comments.push({ text, author: author.name });
         await post.save();
     }
-    res.redirect(`/posts?userId=${userid}`); // Redirect to the same page
+    res.redirect(`/posts?user=${userid}`); // Redirect to the same page
 });
+
 
 //delete a comment
 app.delete('/posts/:postid/:userid/comment/:commentid', async (req, res) => {
@@ -205,8 +260,9 @@ app.delete('/posts/:postid/:userid/comment/:commentid', async (req, res) => {
         post.comments = post.comments.filter(comment => comment._id.toString() !== commentid);
         await post.save();
     }
-    res.redirect(`/posts?userId=${userid}`); // Redirect to the same page
+    res.redirect(`/posts?user=${userid}`); // Redirect to the same page
 });
+
 
 // Edit a comment
 app.put('/posts/:postid/:userid/comment/:commentid', async (req, res) => {
@@ -223,8 +279,11 @@ app.put('/posts/:postid/:userid/comment/:commentid', async (req, res) => {
         }
     }
 
-    res.redirect(`/posts?userId=${userid}`); // Redirect back to the posts page
+    res.redirect(`/posts?user=${userid}`); // Redirect back to the posts page
 });
+
+
+// Add a reaction to a comment
 
 //reacting to comment
 app.post('/posts/:postid/comments/:commentid/react/:userid', async (req, res) => {
@@ -249,12 +308,13 @@ app.post('/posts/:postid/comments/:commentid/react/:userid', async (req, res) =>
                 await post.save();
             }
         }
-        res.redirect(`/posts?userId=${userid}`); // Redirect back to the posts page
+        res.redirect(`/posts?user=${userid}`); // Redirect back to the posts page
     } catch (err) {
         console.error(err);
         res.status(500).send("An error occurred while reacting to the comment");
     }
-});
+}); 
+
 
 // Reply to a comment
 app.post('/posts/:postid/comments/:commentid/reply/:userid', async (req, res) => {
@@ -276,13 +336,38 @@ app.post('/posts/:postid/comments/:commentid/reply/:userid', async (req, res) =>
                 await post.save();
             }
         }
-        res.redirect(`/posts?userId=${user._id}`);
+        res.redirect(`/posts?user=${user._id}`);
     } catch (err) {
         console.error(err);
         res.status(500).send("An error occurred while replying to the comment");
     }
 });
 
+
+
+
+
+// Follow a user
+
+app.post('/users/:userId/follow/:authorId', async (req, res) => {
+    const { userId, authorId } = req.params;
+
+    try {
+        // Find the author (user to be followed)
+        const author = await User.findById(authorId);
+        if (author) {
+            author.followers += 1; // Increment the follower count
+            await author.save();
+        }
+        res.redirect(`/posts?user=${userId}`); // Redirect back to the posts page
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("An error occurred while following the user");
+    }
+});
+
+
+//favorites route
 // Add a post to favourites
 app.post('/users/:userId/favourites/:postId', async (req, res) => {
     const { userId, postId } = req.params;
@@ -296,7 +381,7 @@ app.post('/users/:userId/favourites/:postId', async (req, res) => {
                 await user.save();
             }
         }
-        res.redirect(`/posts?userId=${user._id}`);; // Redirect back to the same page
+        res.redirect(`/posts?user=${user._id}`);; // Redirect back to the same page
     } catch (err) {
         console.error(err);
         res.status(500).send("An error occurred while adding the post to favourites");
@@ -319,9 +404,8 @@ app.get('/users/:userId/favourites', async (req, res) => {
         res.status(500).send("An error occurred while fetching favourite posts");
     }
 });
+  
 
 app.listen(3000,()=>{
     console.log("Server started on port 3000")
-})
-
-
+});

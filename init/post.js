@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Post = require("../models/post.js");
 
-const MONGO_URL = "mongodb+srv://officialvinit1176:mhISj6Z6KQF122Tc@cluster0.wnjhmsx.mongodb.net/";
+const MONGO_URL = "mongodb://127.0.0.1:27017/campusconnect2";
 
 main()
   .then(() => {

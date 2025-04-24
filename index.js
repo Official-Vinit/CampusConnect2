@@ -104,7 +104,7 @@ app.get('/posts', async (req, res) => {
         return res.send("User not found");
     }
     
-    res.render("post.ejs", { posts, user });
+    res.render("posts.ejs", { posts, user });
 });
 
 
@@ -148,7 +148,7 @@ app.get('/posts/:id/mypost',async(req,res)=>{
     let {id} = req.params;
     const user = await User.findById(id).populate("posts");
     console.log(user.posts)
-     res.render("mypost.ejs",{user});
+     res.render("myPosts.ejs",{user});
 });
 
 

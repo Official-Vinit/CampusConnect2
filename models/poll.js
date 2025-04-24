@@ -19,6 +19,11 @@ const pollSchema = new Schema({
             ref: 'User' // Reference to the User model
         }
     ],
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',

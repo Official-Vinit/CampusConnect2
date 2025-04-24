@@ -219,11 +219,13 @@ app.post('/polls/:userId/new', async (req, res) => {
     const { userId } = req.params;
     const { question, options } = req.body;
 
+    const author = await User.findById(userId); // Find the author by userId
     try {
         const poll = new Poll({
             question,
             options: options.map(option => ({ text: option })), // Map options to the schema format
-            createdBy: userId
+            createdBy: userId,
+            author: author
         });
         await poll.save();
         res.redirect(`/posts?user=${userId}`); // Redirect to the polls page
@@ -278,7 +280,7 @@ app.post('/posts/:id/new', upload.single('image'), async (req, res) => {
     const post = new Post({
       caption,
       image: imagePath,
-      author: postAs,
+      author: postAs || user.name || "Anonymous",
       authorId: id
     });
   

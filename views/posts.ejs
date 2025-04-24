@@ -1,101 +1,229 @@
 <% layout('layouts/boilerplate') %> 
-<div class="container-fluid">
+ <div class="container-fluid">
   <div class="row">
-    <!-- Left Sidebar -->
-    <div class="col-lg-2 col-md-3 col-sm-12 p-0 sidebar">
-      <div class="user-profile text-center py-3">
-        <img src="<%= user.photo || '/images/default-profile.png' %>" alt="User Profile" class="rounded-circle user-image img-fluid">
-        <h3 class="user-name mt-2"><%= user.name %></h3>
-      </div>
+<!-- Left Sidebar -->
+<div class="col-lg-2 col-md-3 p-0 sidebar">
+  <div class="user-profile text-center">
+    <img src="<%= user.photo || '/images/default-profile.png' %>" alt="User Profile" class="rounded-circle user-image">
+    <h3 class="user-name"><%= user.name %></h3>
+  </div>
 
-      <div class="user-stats mb-3">
-        <div class="d-flex justify-content-between px-3">
-          <span><i class="fas fa-users"></i> Followers</span>
-          <span class="badge bg-light text-dark"><%= user.followers || 0 %></span>
-        </div>
-      </div>
-
-      <div class="d-grid gap-2 px-3">
-        <form action="/posts/<%= user._id %>/new" method="get">
-          <button class="btn btn-outline-primary"><i class="fas fa-plus-circle"></i> Create Post</button>
-        </form>
-
-        <form action="/polls/<%= user._id %>/new" method="get">
-          <button class="btn btn-outline-primary"><i class="fas fa-plus-circle"></i> Create Poll</button>
-        </form>
-
-        <form action="/posts/<%= user._id %>/mypost" method="get">
-          <button class="btn btn-outline-primary"><i class="fas fa-list"></i> My Posts</button>
-        </form>
-
-        <form action="/users/<%= user._id %>/favourites" method="get">
-          <button class="btn btn-outline-primary"><i class="fas fa-heart"></i> My Favourite Posts</button>
-        </form>
-
-        <form action="/logout" method="get">
-          <button class="btn btn-outline-danger"><i class="fas fa-sign-out-alt"></i> Log Out</button>
-        </form>
-
-        <form action="/users/<%= user._id %>?_method=DELETE" method="POST">
-          <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete your account?')">
-            <i class="fas fa-trash-alt"></i> Delete Account
-          </button>
-        </form>
-      </div>
+  <div class="user-stats">
+    <div class="d-flex justify-content-between">
+      <span><i class="fas fa-users"></i> Followers</span>
+      <span class="badge bg-light text-dark"><%= user.followers || 0 %></span>
     </div>
+  </div>
 
+  <form action="/posts/<%= user._id %>/new" method="get">
+    <button class="nav-button"><i class="fas fa-plus-circle"></i> Create Post</button>
+  </form>
+
+  <form action="/polls/<%= user._id %>/new" method="get">
+    <button class="nav-button"><i class="fas fa-plus-circle"></i> Create Poll</button>
+  </form>
+  
+  <form action="/posts/<%= user._id %>/mypost" method="get">
+    <button class="nav-button"><i class="fas fa-list"></i> My Posts</button>
+  </form>
+
+  <form action="/users/<%= user._id %>/favourites" method="get">
+    <button class="nav-button"><i class="fas fa-heart"></i> My Favourite Posts</button>
+  </form>
+  
+  <form action="/logout" method="get">
+    <button class="nav-button"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+  </form>
+  
+  <form action="/users/<%= user._id %>?_method=DELETE" method="POST">
+    <button type="submit" class="nav-button danger-button" onclick="return confirm('Are you sure you want to delete your account?')">
+      <i class="fas fa-trash-alt"></i> Delete Account
+    </button>
+  </form>
+</div>
+
+
+    
     <!-- Main Content Area -->
-    <div class="col-lg-7 col-md-6 col-sm-12 py-4">
+    <div class="col-lg-7 col-md-6 py-4">
       <h2 class="text-center mb-4">Latest Posts</h2>
-
+      
       <div class="posts-container">
         <% for (let item of combined) { %>
-          <div class="post-card card mb-4">
+          <div class="post-card card">
             <% if (item.type === 'post') { %>
-              <!-- Post Card -->
-              <img src="<%= item.image %>" class="card-img-top img-fluid" alt="Post Image" style="height: auto; object-fit: cover;">
-              <div class="card-body">
-                <h5 class="card-title text-primary"><%= item.caption %></h5>
-                <p class="card-text text-muted">
-                  <strong>Posted by:</strong> <%= item.author || 'Anonymous' %>
-                </p>
-                <p class="card-text">
-                  <small class="text-muted">🕒 <%= item.createdAt.toDateString() %></small>
-                </p>
-                <p class="card-text">
-                  <form action="/posts/<%= item._id %>/<%= user._id %>/upvote" method="POST" style="display: inline;">
-                    <button class="btn btn-success btn-sm" title="Upvote">👍 <%= item.upvotes %></button>
-                  </form>
-                  <form action="/posts/<%= item._id %>/<%= user._id %>/downvote" method="POST" style="display: inline;">
-                    <button class="btn btn-danger btn-sm" title="Downvote">👎 <%= item.downvotes %></button>
-                  </form>
-                </p>
-
-                <!-- Comments Section -->
-                <% if (item.comments && item.comments.length > 0) { %>
-                  <h6 class="mt-3 text-secondary">🗨️ Comments:</h6>
-                  <ul class="list-group">
-                    <% item.comments.forEach(comment => { %>
-                      <li class="list-group-item">
-                        <strong><%= comment.author || 'Anonymous' %>:</strong>
-                        <span><%= comment.text %></span><br>
-                        <small class="text-muted"><%= comment.createdAt.toDateString() %></small>
-                      </li>
-                    <% }) %>
-                  </ul>
-                <% } else { %>
-                  <p class="text-muted mt-3">No comments yet.</p>
-                <% } %>
-
-                <!-- Add Comment Section -->
-                <form action="/posts/<%= item._id %>/<%= user._id %>/comment" method="POST" class="mt-3">
-                  <div class="form-group">
-                    <textarea name="text" class="form-control" rows="2" placeholder="Write your comment here..." required></textarea>
-                  </div>
-                  <button type="submit" class="btn btn-sm btn-primary mt-2">Post Comment</button>
+               <!-- Post Card -->
+            <img src="<%= item.image %>" class="card-img-top" alt="Post Image" style="height: 180px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title text-primary"><%= item.caption %></h5>
+              <p class="card-text text-muted">
+                <strong>Posted by:</strong> <%= item.author || 'Anonymous' %>
+              </p>
+              <p class="card-text">
+                <small class="text-muted">🕒 <%= item.createdAt.toDateString() %></small>
+              </p>
+              <p class="card-text">
+                <form action="/posts/<%= item._id %>/<%= user._id %>/upvote" method="POST" style="display: inline;">
+                  <button class="btn btn-success btn-sm" title="Upvote">👍 <%= item.upvotes %></button>
                 </form>
-              </div>
-            <% } else if (item.type === 'poll') { %>
+                <form action="/posts/<%= item._id %>/<%= user._id %>/downvote" method="POST" style="display: inline;">
+                  <button class="btn btn-danger btn-sm" title="Downvote">👎 <%= item.downvotes %></button>
+                </form>
+                <form action="/users/<%= user._id %>/favourites/<%= item._id %>" method="POST" style="display: inline;">
+                  <button class="btn btn-warning btn-sm" title="Favourite">Favourite </button>
+                </form>
+                <% if (!(item.authorId === user.id)) { %>
+                  <form action="/users/<%= user._id %>/follow/<%= item.authorId %>" method="POST" style="display: inline;">
+                    <button class="btn btn-primary btn-sm" title="followers">Follow </button>
+                  </form>
+                <% } %>
+              </p>
+
+              <!-- Comments Section -->
+<% if (item.comments && item.comments.length > 0) { %>
+  <h6 class="mt-3 text-secondary">🗨️ Comments:</h6>
+  <ul class="list-group">
+    <% item.comments.forEach(comment => { %>
+      <li class="list-group-item">
+        <strong><%= comment.author || 'Anonymous' %>:</strong>
+        <span><%= comment.text %></span><br>
+        <small class="text-muted"><%= comment.createdAt.toDateString() %></small>
+
+        <!-- Buttons Section -->
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <% if (comment.author === user.name) { %>
+            <!-- Edit Button -->
+            <button 
+              class="btn btn-sm btn-outline-primary" 
+              onclick="toggleEditForm('<%= comment._id %>')">
+              ✏️ Edit
+            </button>
+
+            <!-- Delete Button -->
+            <form 
+              action="/posts/<%= item._id %>/<%= user._id %>/comments/<%= comment._id %>?_method=DELETE" 
+              method="POST" 
+              style="display: inline;">
+              <button 
+                class="btn btn-sm btn-outline-danger" 
+                onclick="return confirm('Are you sure you want to delete this comment?')">
+                🗑️ Delete
+              </button>
+            </form>
+          <% } %>
+
+          <!-- Reply Button -->
+          <button 
+            class="btn btn-sm btn-outline-success" 
+            onclick="toggleReplyForm('<%= comment._id %>')">
+            ↩️ Reply
+          </button>
+
+          <!-- Show Replies Button -->
+          <% if (comment.replies && comment.replies.length > 0) { %>
+            <button 
+              class="btn btn-sm btn-outline-info" 
+              onclick="toggleReplies('<%= comment._id %>')">
+              📂 Show Replies (<%= comment.replies.length %>)
+            </button>
+          <% } %>
+        </div>
+
+        <!-- Edit Form (Hidden by Default) -->
+        <form 
+          action="/posts/<%= item._id %>/<%= user._id %>/comments/<%= comment._id %>?_method=PUT" 
+          method="POST" 
+          id="edit-form-<%= comment._id %>" 
+          class="mt-3 d-none">
+          <div class="form-group">
+            <textarea 
+              name="text" 
+              class="form-control" 
+              rows="2" 
+              required><%= comment.text %></textarea>
+          </div>
+          <button type="submit" class="btn btn-sm btn-success mt-2">Save Changes</button>
+          <button 
+            type="button" 
+            class="btn btn-sm btn-secondary mt-2" 
+            onclick="toggleEditForm('<%= comment._id %>')">
+            Cancel
+          </button>
+        </form>
+
+        <!-- Reply Form (Hidden by Default) -->
+        <form 
+          action="/posts/<%= item._id %>/comments/<%= comment._id %>/reply/<%= user._id %>" 
+          method="POST" 
+          id="reply-form-<%= comment._id %>" 
+          class="mt-3 d-none">
+          <div class="form-group">
+            <textarea 
+              name="text" 
+              class="form-control" 
+              rows="2" 
+              placeholder="Write your reply here..." 
+              required></textarea>
+          </div>
+          <button type="submit" class="btn btn-sm btn-success mt-2">Post Reply</button>
+          <button 
+            type="button" 
+            class="btn btn-sm btn-secondary mt-2" 
+            onclick="toggleReplyForm('<%= comment._id %>')">
+            Cancel
+          </button>
+        </form>
+
+        <!-- Replies Section (Hidden by Default) -->
+        <% if (comment.replies && comment.replies.length > 0) { %>
+          <ul class="list-group mt-2 d-none" id="replies-<%= comment._id %>">
+            <% comment.replies.forEach(reply => { %>
+              <li class="list-group-item">
+                <strong><%= reply.author || 'Anonymous' %>:</strong>
+                <span><%= reply.text %></span><br>
+                <small class="text-muted"><%= reply.createdAt.toDateString() %></small>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p class="text-muted mt-3">No comments yet.</p>
+<% } %>
+
+              <!-- Add Comment Section -->
+              <button 
+                class="btn btn-sm btn-outline-primary mt-3" 
+                onclick="toggleCommentForm('<%= item._id %>')">
+                📝 Add Comment
+              </button>
+
+              <!-- Comment Form (Hidden by Default) -->
+              <form 
+                action="/posts/<%= item._id %>/<%= user._id %>/comment" 
+                method="POST" 
+                id="comment-form-<%= item._id %>" 
+                class="mt-3 d-none">
+                <div class="form-group">
+                  <textarea 
+                    name="text" 
+                    class="form-control" 
+                    rows="2" 
+                    placeholder="Write your comment here..." 
+                    required></textarea>
+                </div>
+                <button type="submit" class="btn btn-sm btn-success mt-2">Post Comment</button>
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-secondary mt-2" 
+                  onclick="toggleCommentForm('<%= item._id %>')">
+                  Cancel
+                </button>
+              </form>
+            </div>
+          <% } else if (item.type === 'poll') { %>
               <!-- Poll Card -->
               <div class="card-body">
                 <h4 class="card-title text-primary"><%= item.question %></h4>
@@ -126,31 +254,174 @@
         <% } %>
       </div>
     </div>
-
-    <!-- Right Sidebar - News Ticker -->
-    <div class="col-lg-3 col-md-3 col-sm-12 py-4">
-      <div class="news-box">
-        <h4 class="news-title">
-          <i class="fas fa-newspaper"></i> Latest News
-        </h4>
-        <div class="news-ticker">
-          <div class="news-items">
-            <div class="news-item">
-              <h5>New Feature Added</h5>
-              <p>Now you can react to comments with different emojis!</p>
-            </div>
-            <div class="news-item">
-              <h5>Weekly Challenge</h5>
-              <p>Share your best nature photo and win special badges.</p>
-            </div>
-            <div class="news-item">
-              <h5>Community Spotlight</h5>
-              <p>This week's top contributor is user123 with 50 helpful comments!</p>
-            </div>
-          </div>
+    
+   <!-- Right Sidebar - News Ticker -->
+<div class="col-lg-3 col-md-3 py-4">
+  <div class="news-box">
+    <h4 class="news-title">
+      <i class="fas fa-newspaper"></i> Latest News
+    </h4>
+    <div class="news-ticker">
+      <div class="news-items">
+        <div class="news-item">
+          <h5>New Feature Added</h5>
+          <p>Now you can react to comments with different emojis!</p>
+        </div>
+        <div class="news-item">
+          <h5>Weekly Challenge</h5>
+          <p>Share your best nature photo and win special badges.</p>
+        </div>
+        <div class="news-item">
+          <h5>Community Spotlight</h5>
+          <p>This week's top contributor is user123 with 50 helpful comments!</p>
+        </div>
+        <div class="news-item">
+          <h5>Coming Soon</h5>
+          <p>Private messaging feature will be available next week.</p>
+        </div>
+        <div class="news-item">
+          <h5>Maintenance Notice</h5>
+          <p>Brief downtime expected on Saturday for system upgrades.</p>
+        </div>
+        <div class="news-item">
+          <h5>New Feature Added</h5>
+          <p>Now you can react to comments with different emojis!</p>
         </div>
       </div>
     </div>
   </div>
+  <div class="chatbot-box mt-4 shadow-lg p-3 bg-light rounded" style="border: 2px solid #198754;">
+    <h4 class="chatbot-title text-success mb-3">
+      <i class="fas fa-robot"></i> Ask KPRIET Assistant 🤖
+    </h4>
+  
+    <div class="chatbot-body mb-3" id="chatbotBody" style="height: 400px; overflow-y: auto; background: #f8f9fa; border: 1px solid #ced4da; padding: 10px; border-radius: 10px;">
+      <div class="chat-message bot-message bg-success text-white p-2 rounded mb-2" style="max-width: 75%;">👋 Hi! Welcome to KPRIET Assistant. You can ask questions or use the suggestions below.</div>
+    </div>
+  
+    <!-- Suggested Question Buttons -->
+    <div class="mb-2" id="suggestedQuestions">
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="sendQuickQuestion('What are the library timings?')">📚 Library</button>
+        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="sendQuickQuestion('Tell me about hostel facilities')">🏠 Hostel</button>
+        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="sendQuickQuestion('What are the upcoming events?')">🎉 Events</button>
+        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="sendQuickQuestion('What are the placement opportunities?')">🎯 Placements</button>
+        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="sendQuickQuestion('Is transport available for students?')">🚌 Transport</button>
+        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="sendQuickQuestion('How to contact KPRIET?')">📞 Contact</button>
+      </div>
+    </div>
+  
+    <!-- Chat Input Form -->
+    <form id="chatbotForm" class="d-flex mt-2">
+      <input type="text" class="form-control me-2 rounded-pill" placeholder="Type your message..." id="chatbotInput" required>
+      <button class="btn btn-success rounded-pill px-4" type="submit">Send</button>
+    </form>
+  </div>
 </div>
 
+
+
+
+
+
+
+
+
+<script>
+  // Store the current scroll position in localStorage before form submission
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get all forms
+    const forms = document.querySelectorAll('form');
+    
+    // Add event listener to each form
+    forms.forEach(form => {
+      form.addEventListener('submit', function() {
+        localStorage.setItem('scrollPosition', window.scrollY);
+      });
+    });
+    
+    // Restore scroll position when page loads
+    if (localStorage.getItem('scrollPosition')) {
+      window.scrollTo(0, localStorage.getItem('scrollPosition'));
+      // Optional: Clear the stored position after using it
+      // localStorage.removeItem('scrollPosition');
+    }
+  });
+
+  function toggleCommentForm(postId) {
+    const form = document.getElementById(`comment-form-${postId}`);
+    form.classList.toggle('d-none');
+  }
+
+  function toggleEditForm(commentId) {
+    const form = document.getElementById(`edit-form-${commentId}`);
+    form.classList.toggle('d-none');
+  }
+
+  function toggleReplyForm(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    form.classList.toggle('d-none');
+  }
+
+  function toggleReplies(commentId) {
+    const replies = document.getElementById(`replies-${commentId}`);
+    replies.classList.toggle('d-none');
+  }
+  
+  // Pause news ticker animation on hover
+  document.querySelector('.news-ticker').addEventListener('mouseenter', function() {
+    document.querySelector('.news-items').style.animationPlayState = 'paused';
+  });
+  
+  document.querySelector('.news-ticker').addEventListener('mouseleave', function() {
+    document.querySelector('.news-items').style.animationPlayState = 'running';
+  });
+
+  const chatbotForm = document.getElementById('chatbotForm');
+  const chatbotInput = document.getElementById('chatbotInput');
+  const chatbotBody = document.getElementById('chatbotBody');
+
+  const responses = {
+    "timetable": "📅 You can find your timetable on the student portal based on your department and year.",
+    "library": "📚 The library is located in the main academic block. It’s open from 8 AM to 8 PM on weekdays.",
+    "canteen": "🍽️ The canteen offers hygienic South Indian meals and snacks from 8 AM to 6 PM.",
+    "event": "🎉 Our upcoming event is *Tech Carnival 2025*! Check the Events page for more details.",
+    "hod": "👨‍🏫 Your HoD is available from 10 AM to 12 PM on weekdays. Please visit your department.",
+    "placement": "🎯 Our placement cell collaborates with top companies. Check out recent stats on the placement page!",
+    "hostel": "🏠 Hostels for both boys and girls are available with Wi-Fi, mess, and 24/7 security.",
+    "transport": "🚌 Buses are available across Coimbatore and nearby towns. Visit the transport section for routes.",
+    "clubs": "🎭 Clubs like Code Club, Music Club, Nature Club are open. Register via the student portal.",
+    "contact": "📞 Call us at +91 422 2635600 or email info@kpriet.ac.in for any queries.",
+    "default": "🤖 Hmm, I’m still learning. Try asking about 'library', 'hostel', 'clubs', or 'placements'."
+  };
+
+  chatbotForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const userMessage = chatbotInput.value.trim();
+    if (!userMessage) return;
+    handleUserInput(userMessage);
+  });
+
+  function sendQuickQuestion(text) {
+    chatbotInput.value = text;
+    chatbotForm.dispatchEvent(new Event('submit'));
+  }
+
+  function handleUserInput(userMessage) {
+    // Show user message
+    chatbotBody.innerHTML += `<div class="chat-message user-message bg-light border rounded p-2 mb-2 ms-auto" style="max-width: 75%;">🙋‍♂️ ${userMessage}</div>`;
+
+    // Match bot response
+    const key = Object.keys(responses).find(k => userMessage.toLowerCase().includes(k));
+    const botReply = responses[key] || responses["default"];
+
+    setTimeout(() => {
+      chatbotBody.innerHTML += `<div class="chat-message bot-message bg-success text-white p-2 rounded mb-2" style="max-width: 75%;">🤖 ${botReply}</div>`;
+      chatbotBody.scrollTop = chatbotBody.scrollHeight;
+    }, 500);
+
+    chatbotInput.value = '';
+  }
+
+  
+</script>

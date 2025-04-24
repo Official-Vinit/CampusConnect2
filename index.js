@@ -50,15 +50,15 @@ main()
     console.log(err)
 });
 
-async function main() {
-    await mongoose.connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
-}
 // async function main() {
-//     await mongoose.connect("mongodb://127.0.0.1:27017/campusconnect2");
+//     await mongoose.connect(process.env.MONGO_URI, {
+//         useNewUrlParser: true,
+//         useUnifiedTopology: true
+//     });
 // }
+async function main() {
+    await mongoose.connect("mongodb://127.0.0.1:27017/campusconnect2");
+}
 
 const multer = require('multer');
 
@@ -422,7 +422,7 @@ app.post('/posts/:postid/:userid/comment', async (req, res) => {
 
 
 //delete a comment
-app.delete('/posts/:postid/:userid/comment/:commentid', async (req, res) => {
+app.delete('/posts/:postid/:userid/comments/:commentid', async (req, res) => {
     const { postid, userid, commentid } = req.params;
     const post = await Post.findById(postid);
     if (post) {
@@ -434,7 +434,7 @@ app.delete('/posts/:postid/:userid/comment/:commentid', async (req, res) => {
 
 
 // Edit a comment
-app.put('/posts/:postid/:userid/comment/:commentid', async (req, res) => {
+app.put('/posts/:postid/:userid/comments/:commentid', async (req, res) => {
     const { postid, userid, commentid } = req.params;
     const { text } = req.body; // Get the updated comment text from the request body
     const post = await Post.findById(postid);

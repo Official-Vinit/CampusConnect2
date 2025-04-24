@@ -53,26 +53,24 @@ const postSchema = new Schema({
                 type: Date,
                 default: Date.now
             },
-            reactions: [
-                {
-                    love: {
-                        type: Number,
-                        default: 0
-                    },
-                    laugh: {
-                        type: Number,
-                        default: 0
-                    },
-                    wow: {
-                        type: Number,
-                        default: 0
-                    },
-                    like: {
-                        type: Number,
-                        default: 0
-                    }
+            reactions: {
+                love: {
+                    type: Number,
+                    default: 0
+                },
+                laugh: {
+                    type: Number,
+                    default: 0
+                },
+                wow: {
+                    type: Number,
+                    default: 0
+                },
+                like: {
+                    type: Number,
+                    default: 0
                 }
-            ],
+            },
             replies: [
                 {
                     text: String,

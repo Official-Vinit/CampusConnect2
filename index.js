@@ -257,7 +257,7 @@ app.post('/polls/:userId/vote/:pollId', async (req, res) => {
 
 app.post('/posts/:id/new', upload.single('image'), async (req, res) => {
     const { id } = req.params;
-    const { caption } = req.body;
+    const { caption,postAs } = req.body;
     const user = await User.findById(id);
   
     let imagePath = '';
@@ -268,7 +268,7 @@ app.post('/posts/:id/new', upload.single('image'), async (req, res) => {
     const post = new Post({
       caption,
       image: imagePath,
-      author: user.name,
+      author: postAs,
       authorId: id
     });
   
@@ -278,6 +278,9 @@ app.post('/posts/:id/new', upload.single('image'), async (req, res) => {
   
     res.redirect(`/posts?user=${user._id}`);
   });
+
+
+
   
 
 
@@ -422,7 +425,7 @@ app.post('/posts/:postid/:userid/comment', async (req, res) => {
 
 
 //delete a comment
-app.delete('/posts/:postid/:userid/comments /:commentid', async (req, res) => {
+app.delete('/posts/:postid/:userid/comments/:commentid', async (req, res) => {
     const { postid, userid, commentid } = req.params;
     const post = await Post.findById(postid);
     if (post) {
@@ -454,7 +457,6 @@ app.put('/posts/:postid/:userid/comments/:commentid', async (req, res) => {
 
 // Add a reaction to a comment
 
-//reacting to comment
 app.post('/posts/:postid/comments/:commentid/react/:userid', async (req, res) => {
     const { postid, commentid, userid } = req.params;
     const { emoji } = req.body; // Get the emoji from the request body
@@ -466,12 +468,16 @@ app.post('/posts/:postid/comments/:commentid/react/:userid', async (req, res) =>
             const comment = post.comments.id(commentid);
             if (comment) {
                 // Initialize reactions if not already present
-                if (!comment.reactions.length) {
-                    comment.reactions.push({ love: 0, laugh: 0, wow: 0, like: 0 });
+                if (!comment.reactions) {
+                    comment.reactions = { love: 0, laugh: 0, wow: 0, like: 0 };
                 }
 
                 // Increment the count for the specified emoji
-                comment.reactions[0][emoji] += 1;
+                if (comment.reactions.hasOwnProperty(emoji)) {
+                    comment.reactions[emoji] += 1;
+                } else {
+                    return res.status(400).send("Invalid reaction type");
+                }
 
                 // Save the updated post
                 await post.save();
@@ -482,7 +488,7 @@ app.post('/posts/:postid/comments/:commentid/react/:userid', async (req, res) =>
         console.error(err);
         res.status(500).send("An error occurred while reacting to the comment");
     }
-}); 
+});
 
 
 // Reply to a comment

@@ -23,6 +23,10 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
+    photo:{
+        type: String,
+        default: 'https://res.cloudinary.com/dqj0xg3zv/image/upload/v1698236482/Default-Profile-Picture-1_1_oj4j5c.png'
+    },
     createdAt: {
         type: Date,
         default: Date.now

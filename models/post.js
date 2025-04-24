@@ -32,6 +32,12 @@ const postSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    votedBy: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     comments: [
         {
             text: {
@@ -76,7 +82,7 @@ const postSchema = new Schema({
             ],
         }
     ],
-    
+
 });
 
 module.exports = mongoose.model('Post', postSchema);

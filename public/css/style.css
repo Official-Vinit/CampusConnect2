@@ -335,3 +335,50 @@ h2.text-center {
   padding: 8px 10px; /* Increase padding for a bigger input field */
   font-size: 1.1rem; /* Increase font size for better readability */
 }
+
+.chatbot-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  max-height: 800px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatbot-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.chatbot-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #fafafa;
+  max-height: 340px;
+}
+
+.chat-message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  max-width: 80%;
+}
+
+.bot-message {
+  background-color: #e9f7ef;
+  align-self: flex-start;
+}
+
+.user-message {
+  background-color: #d1ecf1;
+  align-self: flex-end;
+  text-align: right;
+}

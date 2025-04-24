@@ -50,15 +50,15 @@ main()
     console.log(err)
 });
 
-async function main() {
-    await mongoose.connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
-}
 // async function main() {
-//     await mongoose.connect("mongodb://127.0.0.1:27017/campusconnect2");
+//     await mongoose.connect(process.env.MONGO_URI, {
+//         useNewUrlParser: true,
+//         useUnifiedTopology: true
+//     });
 // }
+async function main() {
+    await mongoose.connect("mongodb://127.0.0.1:27017/campusconnect2");
+}
 
 const multer = require('multer');
 
@@ -193,10 +193,20 @@ app.get('/posts', async (req, res) => {
 
 
 //new get
-app.get('/posts/:id/new', async(req, res) => {
-    let{id} = req.params;
-    const user = await User.findById(id);
-    res.render("newpost.ejs",{user})
+app.get('/posts/:id/new', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        res.render("newPost.ejs", { user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("An error occurred while loading the new post page");
+    }
 });
 
 app.get('/polls/:id/new',async(req,res)=>{

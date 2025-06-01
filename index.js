@@ -225,7 +225,7 @@ app.post('/polls/:userId/new', async (req, res) => {
             question,
             options: options.map(option => ({ text: option })), // Map options to the schema format
             createdBy: userId,
-            author: author
+            author: author.name
         });
         await poll.save();
         res.redirect(`/posts?user=${userId}`); // Redirect to the polls page
@@ -288,7 +288,7 @@ app.post('/posts/:id/new', upload.single('image'), async (req, res) => {
     user.posts.push(post._id);
     await user.save();
   
-    res.redirect(`/posts?user=${user._id}`);
+    res.redirect(`/posts?user=${user,id}`);
   });
 
 
@@ -593,6 +593,6 @@ app.get('/users/:userId/favourites', async (req, res) => {
 });
   
 
-app.listen(3000,()=>{
-    console.log("Server started on port 3000")
+app.listen(3000,'0.0.0.0',()=>{
+    console.log('Server running on http://0.0.0.0:3000');
 });
